@@ -10,19 +10,26 @@ import android.widget.Button
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.tdfinaltest.model.ProductsAdapter
+import com.example.tdfinaltest.model.local.ProductEntity
 import com.example.tdfinaltest.model.viewmodel.ProductsViewModel
+import kotlinx.android.synthetic.main.fragment_first.*
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
-class FirstFragment : Fragment() {
+class FirstFragment : Fragment(), ProductsAdapter.PassTheData {
 
     lateinit var mViewModel : ProductsViewModel
+    lateinit var mAdapter : ProductsAdapter
 
-    ///override fun OnCreate(savedInstanceState: Bundle?) {
-    ///    super.onCreate(savedInstanceState)
-    ///    mViewModel = ViewModelProvider(this).get(ProductsViewModel::class.java)
-    ///}
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mViewModel = ViewModelProvider(this).get(ProductsViewModel::class.java)
+        mAdapter = ProductsAdapter(this)
+
+    }
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -35,12 +42,19 @@ class FirstFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val recyclerView = mRecycler
+        recyclerView.adapter = mAdapter
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.setHasFixedSize(true)
         mViewModel.liveDataFromLocal.observe(viewLifecycleOwner, Observer {
             Log.d("FROMDB", it.toString())
+            mAdapter.updateAdapter(it)
         })
 
-        view.findViewById<Button>(R.id.button_first).setOnClickListener {
-            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
-        }
+    }
+
+    override fun passProducts(products: ProductEntity) {
+        findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+
     }
 }
