@@ -1,4 +1,4 @@
-package com.example.tdfinaltest.model
+package com.example.tdfinaltest.model.ui
 
 import android.view.LayoutInflater
 import android.view.View
